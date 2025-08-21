@@ -3,13 +3,13 @@ import { Person } from "./types";
 import {
   parseNetscapeCookieFile,
   hasValidCookie,
-  cookiesToHeader,
   VALID_COOKIE_NAMES,
+  cookieEntriesToMap,
+  cookieMapToHeader,
+  applySetCookiesToMap,
 } from "./cookies";
 import { request } from "undici";
 
-// https://github.com/costastf/locationsharinglib/issues/110
-// https://github.com/costastf/locationsharinglib/issues/110
 // https://github.com/costastf/locationsharinglib/issues/110
 
 async function getServerResponse(cookieHeader: string, authUser = 0) {
@@ -32,14 +32,20 @@ async function getServerResponse(cookieHeader: string, authUser = 0) {
     },
   });
 
-  // TODO: Maybe use set-cookies res header?
+  // TODO: UPDATE COOKIE HEADER BASED ON SET-COOKIES HEADER
+  const setCookie = res.headers["set-cookie"] as string | string[] | undefined;
 
   const text = await res.body.text();
-  return { status: res.statusCode, ok: res.statusCode >= 200 && res.statusCode < 300, text };
+  return {
+    status: res.statusCode,
+    ok: res.statusCode >= 200 && res.statusCode < 300,
+    text,
+    setCookie,
+  };
 }
 
 export class Service {
-  private cookieHeader: string;
+  private cookies: Map<string, string>;
   private authUser: number;
 
   constructor(netscapeCookieData: string, authUser: number) {
@@ -49,12 +55,14 @@ export class Service {
         `Invalid cookies: Missing either of ${Array.from(VALID_COOKIE_NAMES).join(", ")} cookies!`
       );
     }
-    this.cookieHeader = cookiesToHeader(entries);
+    this.cookies = cookieEntriesToMap(entries);
     this.authUser = authUser;
   }
 
   private async getRawData(): Promise<any> {
-    const response = await getServerResponse(this.cookieHeader, this.authUser);
+    const response = await getServerResponse(cookieMapToHeader(this.cookies), this.authUser);
+    // Update the in-memory cookies for subsequent requests
+    applySetCookiesToMap(this.cookies, response.setCookie);
 
     if (!response.ok)
       throw new Error(`Received invalid data: ${response.text}, cannot parse properly.`);
