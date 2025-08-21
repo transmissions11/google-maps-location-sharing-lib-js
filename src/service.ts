@@ -1,6 +1,6 @@
 import { InvalidCookieFile, InvalidCookies, InvalidData } from './errors';
-import { Person } from './person';
-import { CookieEntry } from './types';
+import { parsePerson } from './person';
+import { CookieEntry, Person } from './types';
 import { request } from 'undici';
 import { readFile } from 'node:fs/promises';
 
@@ -142,7 +142,7 @@ export class Service {
     const people: Person[] = [];
     for (const info of sharedEntries) {
       try {
-        people.push(new Person(info));
+        people.push(parsePerson(info));
       } catch {
         // drop invalid
       }
@@ -153,7 +153,7 @@ export class Service {
   async getAuthenticatedPerson(): Promise<Person | null> {
     try {
       const output = await this.getData();
-      const person = new Person([
+      const person = parsePerson([
         this.email,
         output?.[9]?.[1],
         null,
