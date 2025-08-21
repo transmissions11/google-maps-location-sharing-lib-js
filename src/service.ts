@@ -4,9 +4,8 @@ import {
   parseNetscapeCookieFile,
   hasValidCookie,
   VALID_COOKIE_NAMES,
-  cookieEntriesToMap,
-  cookieMapToHeader,
   applySetCookiesToMap,
+  cookiesToHeader,
 } from "./cookies";
 import { request } from "undici";
 
@@ -32,15 +31,12 @@ async function getServerResponse(cookieHeader: string, authUser = 0) {
     },
   });
 
-  // TODO: UPDATE COOKIE HEADER BASED ON SET-COOKIES HEADER
-  const setCookie = res.headers["set-cookie"] as string | string[] | undefined;
-
   const text = await res.body.text();
   return {
     status: res.statusCode,
     ok: res.statusCode >= 200 && res.statusCode < 300,
     text,
-    setCookie,
+    setCookieHeaderRaw: res.headers["set-cookie"] as string | string[] | undefined,
   };
 }
 
@@ -49,20 +45,21 @@ export class Service {
   private authUser: number;
 
   constructor(netscapeCookieData: string, authUser: number) {
-    const entries = parseNetscapeCookieFile(netscapeCookieData);
-    if (!hasValidCookie(entries)) {
+    const cookies = parseNetscapeCookieFile(netscapeCookieData);
+    if (!hasValidCookie(cookies)) {
       throw new Error(
         `Invalid cookies: Missing either of ${Array.from(VALID_COOKIE_NAMES).join(", ")} cookies!`
       );
     }
-    this.cookies = cookieEntriesToMap(entries);
+    this.cookies = cookies;
     this.authUser = authUser;
   }
 
   private async getRawData(): Promise<any> {
-    const response = await getServerResponse(cookieMapToHeader(this.cookies), this.authUser);
-    // Update the in-memory cookies for subsequent requests
-    applySetCookiesToMap(this.cookies, response.setCookie);
+    const response = await getServerResponse(cookiesToHeader(this.cookies), this.authUser);
+
+    // Update the in-memory cookies for subsequent requests.
+    applySetCookiesToMap(this.cookies, response.setCookieHeaderRaw);
 
     if (!response.ok)
       throw new Error(`Received invalid data: ${response.text}, cannot parse properly.`);

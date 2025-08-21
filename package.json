@@ -26,10 +26,12 @@
   ],
   "author": "",
   "dependencies": {
+    "set-cookie-parser": "^2.6.0",
     "undici": "^6.19.8"
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
+    "@types/set-cookie-parser": "^2.4.8",
     "typescript": "^5.5.4",
     "tsx": "^4.19.1"
   }
