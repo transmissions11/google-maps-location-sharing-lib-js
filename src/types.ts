@@ -1,5 +1,3 @@
-export type RawPerson = any[];
-
 export interface CookieEntry {
   domain: string;
   flag: boolean;
@@ -8,11 +6,6 @@ export interface CookieEntry {
   expiry: number;
   name: string;
   value: string;
-}
-
-export interface Coordinates {
-  latitude: string | number | null;
-  longitude: string | number | null;
 }
 
 export interface Person {

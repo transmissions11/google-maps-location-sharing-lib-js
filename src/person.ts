@@ -1,5 +1,4 @@
-import { InvalidData } from './errors';
-import type { Person } from './types';
+import type { Person } from "./types";
 
 export function parsePerson(data: any[]): Person {
   try {
@@ -39,21 +38,6 @@ export function parsePerson(data: any[]): Person {
       datetime,
     };
   } catch (e) {
-    throw new InvalidData('Invalid person data array');
+    throw new Error("Invalid person data array.");
   }
-}
-
-export function personToString(person: Person): string {
-  const lines = [
-    `Full name        :${person.fullName}`,
-    `Nickname         :${person.nickname}`,
-    `Current location :${person.address}`,
-    `Latitude         :${person.latitude}`,
-    `Longitude        :${person.longitude}`,
-    `Datetime         :${person.datetime?.toISOString?.() ?? ''}`,
-    `Charging         :${person.charging}`,
-    `Battery %        :${person.batteryLevel}`,
-    `Accuracy         :${person.accuracy}`,
-  ];
-  return lines.join('\n');
 }
