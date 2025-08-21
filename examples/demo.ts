@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { readFile } from "node:fs/promises";
 import { Service, personToString } from "../src";
 
 async function main() {
@@ -12,7 +13,9 @@ async function main() {
     process.exit(1);
   }
 
-  const svc = await Service.fromCookiesFile(cookiesFile);
+  const netscapeCookieData = await readFile(cookiesFile, "utf8");
+
+  const svc = new Service(netscapeCookieData, "0");
 
   const people = await svc.getSharedPeople();
   console.log(`Fetched ${people.length} people`);
