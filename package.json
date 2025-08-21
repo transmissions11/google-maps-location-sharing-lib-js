@@ -12,7 +12,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "example": "tsx examples/demo.ts"
   },
   "engines": {
     "node": ">=18"
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "tsx": "^4.19.1"
   }
 }

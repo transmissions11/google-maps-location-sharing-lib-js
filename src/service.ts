@@ -89,6 +89,8 @@ export class Service {
   private async getData(): Promise<any> {
     const response = await getServerResponse(this.cookieHeader);
 
+    console.log(response.text);
+
     if (!response.ok)
       throw new InvalidData(`Received invalid data: ${response.text}, cannot parse properly.`);
 
