@@ -5,7 +5,6 @@ import {
   hasValidCookie,
   VALID_COOKIE_NAMES,
 } from "./cookies";
-import { request } from "undici";
 
 export async function getGoogleMapsSharedPeople(
   cookies: Map<string, string>,
@@ -73,18 +72,18 @@ async function makeGoogleMapsAPICall(cookieHeader: string, authUser = 0) {
     "!1m7!8m6!1m3!1i14!2i8413!3i5385!2i6!3x4095!2m3!1e0!2sm!3i407105169!3m7!2sen!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e1!5m4!1e4!8m2!1e0!1e1!6m9!1e12!2i2!26m1!4b1!30m1!1f1.3953487873077393!39b1!44e1!50e0!23i4111425"
   );
 
-  const res = await request(`${url}?${params.toString()}`, {
+  const res = await fetch(`${url}?${params.toString()}`, {
     method: "GET",
     headers: {
       cookie: cookieHeader,
     },
   });
 
-  const text = await res.body.text();
+  const text = await res.text();
   return {
-    status: res.statusCode,
-    ok: res.statusCode >= 200 && res.statusCode < 300,
+    status: res.status,
+    ok: res.status >= 200 && res.status < 300,
     text,
-    setCookieHeaderRaw: res.headers["set-cookie"] as string | string[] | undefined,
+    setCookieHeaderRaw: res.headers.getSetCookie(),
   };
 }
