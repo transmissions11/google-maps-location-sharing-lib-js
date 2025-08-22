@@ -58,6 +58,7 @@ export class Service {
   private async getRawData(): Promise<any> {
     const response = await getServerResponse(cookiesToHeader(this.cookies), this.authUser);
 
+    // TODO: Should return this as we'll be doing this in a stateless context...
     // Update the in-memory cookies for subsequent requests.
     applySetCookiesToMap(this.cookies, response.setCookieHeaderRaw);
 
