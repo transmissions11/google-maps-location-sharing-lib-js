@@ -2,7 +2,7 @@ import setCookieParser from "set-cookie-parser";
 
 export const VALID_COOKIE_NAMES = new Set(["__Secure-1PSID", "__Secure-3PSID"]);
 
-export function parseNetscapeCookieFile(contents: string): Map<string, string> {
+export function parseNetscapeCookieString(contents: string): Map<string, string> {
   const lines = contents.split(/\r?\n/);
   const cookies = new Map<string, string>();
   for (const raw of lines) {

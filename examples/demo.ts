@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import { readFile } from "node:fs/promises";
-import { Service, personToString } from "../src";
+import { getGoogleMapsSharedPeople, parseNetscapeCookieString } from "../src";
 
 async function main() {
-  const [cookiesFile, query] = process.argv.slice(2);
+  const [cookiesFile] = process.argv.slice(2);
   if (!cookiesFile) {
-    console.error("Usage: tsx examples/demo.ts <cookies-file> [nickname-or-name]");
+    console.error("Usage: tsx examples/demo.ts <cookies-file>");
     process.exit(1);
   }
   if (!fs.existsSync(cookiesFile)) {
@@ -14,10 +14,9 @@ async function main() {
   }
 
   const netscapeCookieData = await readFile(cookiesFile, "utf8");
+  const cookies = parseNetscapeCookieString(netscapeCookieData);
 
-  const svc = new Service(netscapeCookieData, "0");
-
-  const people = await svc.getSharedPeople();
+  const { people } = await getGoogleMapsSharedPeople(cookies, 0);
   console.log(`Fetched ${people.length} people`);
   console.log(people);
 }

@@ -1,7 +1,7 @@
 {
-  "name": "locationsharinglibjs",
+  "name": "google-maps-location-sharing-lib-js",
   "version": "0.1.0",
-  "description": "Minimal TypeScript client for Google Maps Location Sharing (unofficial)",
+  "description": "Typescript semi-port of costastf's locationsharinglib.",
   "license": "MIT",
   "type": "commonjs",
   "main": "dist/index.js",
