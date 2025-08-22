@@ -1,6 +1,10 @@
-import { parsePerson } from "./person";
-import { Person } from "./types";
-import { applySetCookiesToMap, cookiesToHeader } from "./cookies";
+import { Person, parsePerson } from "./types";
+import {
+  applySetCookiesToMap,
+  cookiesToHeader,
+  hasValidCookie,
+  VALID_COOKIE_NAMES,
+} from "./cookies";
 import { request } from "undici";
 
 export async function getGoogleMapsSharedPeople(
@@ -24,6 +28,12 @@ async function getRawGoogleMapsAPIData(
   cookies: Map<string, string>,
   authUser: number
 ): Promise<{ data: any; newCookies: Map<string, string> }> {
+  if (!hasValidCookie(cookies)) {
+    throw new Error(
+      `Invalid cookies: Missing either of ${Array.from(VALID_COOKIE_NAMES).join(", ")} cookies!`
+    );
+  }
+
   const response = await makeGoogleMapsAPICall(cookiesToHeader(cookies), authUser);
 
   // See https://github.com/costastf/locationsharinglib/issues/110 if you're having cookies issues.
@@ -62,6 +72,7 @@ async function makeGoogleMapsAPICall(cookieHeader: string, authUser = 0) {
     // the below info points to google's headquarters.
     "!1m7!8m6!1m3!1i14!2i8413!3i5385!2i6!3x4095!2m3!1e0!2sm!3i407105169!3m7!2sen!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e1!5m4!1e4!8m2!1e0!1e1!6m9!1e12!2i2!26m1!4b1!30m1!1f1.3953487873077393!39b1!44e1!50e0!23i4111425"
   );
+
   const res = await request(`${url}?${params.toString()}`, {
     method: "GET",
     headers: {

@@ -1,4 +1,3 @@
-export * from "./person";
-export * from "./service";
+export * from "./api";
 export * from "./types";
 export * from "./cookies";
